@@ -246,6 +246,52 @@ void manageDonationsAndRequests() {
         return;
     }
 
+    cout << "Would you like to edit the information? (1 for Yes, 0 for No): ";
+    bool edit;
+    cin >> edit;
+
+    if (edit) {
+        // Edit donor information
+        for (int i = 0; i < donationCount; i++) {
+            if (donations[i].name == donorName) {
+                cout << "Enter new donor name (leave empty to keep current): ";
+                string newName;
+                cin >> newName;
+                if (!newName.empty()) {
+                    donations[i].name = newName;
+                }
+
+                cout << "Enter new donor contact (leave empty to keep current): ";
+                string newContact;
+                cin >> newContact;
+                if (!newContact.empty()) {
+                    donations[i].contact = newContact;
+                }
+            }
+        }
+
+        // Edit recipient information
+        for (int i = 0; i < requestCount; i++) {
+            if (requests[i].name == requestName) {
+                cout << "Enter new recipient name (leave empty to keep current): ";
+                string newName;
+                cin >> newName;
+                if (!newName.empty()) {
+                    requests[i].name = newName;
+                }
+
+                cout << "Enter new recipient contact (leave empty to keep current): ";
+                string newContact;
+                cin >> newContact;
+                if (!newContact.empty()) {
+                    requests[i].contact = newContact;
+                }
+            }
+        }
+
+        cout << "Information updated successfully!" << endl;
+    }
+
     cout << "Confirm donor and recipient (1 for Yes, 0 for No): ";
     bool confirm;
     cin >> confirm;
@@ -260,13 +306,47 @@ void viewHistoryAndReports() {
     clearScreen();
     if (historyCount == 0) {
         cout << "No history available." << endl;
-    } else {
-        for (int i = 0; i < historyCount; i++) {
+        return;
+    } 
+
+    // Display history with current names
+    for (int i = 0; i < historyCount; i++) {
+        // Extract donor and recipient names from history string
+        string donorName, recipientName;
+        size_t donorPos = history[i].find("Donor: ") + 6;
+        size_t recipientPos = history[i].find(" has donated to ") + 16;
+        
+        if (donorPos != string::npos && recipientPos != string::npos) {
+            // Extract names
+            donorName = history[i].substr(donorPos, recipientPos - donorPos - 1);
+            recipientName = history[i].substr(recipientPos);
+            
+            // Find current donor name
+            string currentDonorName = donorName;
+            for (int j = 0; j < donationCount; j++) {
+                if (donations[j].name == currentDonorName) {
+                    currentDonorName = donations[j].name;
+                    break;
+                }
+            }
+            
+            // Find current recipient name
+            string currentRecipientName = recipientName;
+            for (int k = 0; k < requestCount; k++) {
+                if (requests[k].name == currentRecipientName) {
+                    currentRecipientName = requests[k].name;
+                    break;
+                }
+            }
+            
+            // Display with current names
+            cout << "Donor: " << currentDonorName << " has donated to " << currentRecipientName;
+            cout << " (Original: " << donorName << " -> " << recipientName << ")" << endl;
+        } else {
             cout << history[i] << endl;
         }
     }
 }
-
 void adminDashboard() {
     int choice;
     do {
